@@ -1,0 +1,60 @@
+---
+title: "Logistic Regression"
+editor_options:
+  chunk_output_type: inline
+output: html_notebook
+---
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(reshape)
+library(HSAUR)
+library(ggcorrplot)
+```
+
+```{r}
+# Load the diabetes dataset: 
+# 10 predictors which are age, gender (1-female, 2-male), body-mass index, average blood pressure, and six blood serum measurements and 1 response variable which is a quantitative measure of disease progression one year after baseline)
+df = read.csv("D:/2nd sem/Applied-Advanced-Probability-and-Statistics/Codes/Data/diabetes.csv", header = TRUE, stringsAsFactors = FALSE)
+str(df)
+```
+
+
+```{r}
+summary(df)
+```
+
+
+```{r}
+#fit a logistic regression model
+model = glm(Outcome ~ ., data = df, family = binomial)
+```
+
+```{r}
+predicted_probabilities = predict(model, type = "response")
+
+```
+
+```{r}
+roc_curve = roc(Y, predicted_probabilities)
+ggroc(roc_curve)
+plot(FPR, TPR, type = "l", col = "blue", xlab = "False Positive Rate (FPR)", ylab = "True Positive Rate (TPR)", main = "ROC Curve")
+
+```
+```{r}
+train = sample(1:nrow(df), nrow(df) * 0.7)
+```
+
+```{r}
+predictions = predict(model, newdata = df[train, ], type = "response")
+
+
+prc_obj = pr.curve(scores.class0 = predictions, weights.class0 = df$Outcome[train], curve = TRUE)
+
+plot(prc_obj, main="Precision-Recall Curve", xlab="Recall", ylab="Precision")
+```
+
+
+
+
